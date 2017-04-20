@@ -15,12 +15,17 @@ window.addEventListener('DOMContentLoaded', function() {
     var shearY = 0;
     var shearZ = 0;
     var actualElement = false; //false is for boat, true for crane
+    var meshesColliderList = [];
 
     engine.enableOfflineSupport = false;
 
     var createScene = function() {
         var scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color3.White();
+        scene.enablePhysics(new BABYLON.Vector3(0, -10, 0), new BABYLON.OimoJSPlugin());
+        var gravity = new BABYLON.Vector3(0, -9.81, 0);
+        scene.enablePhysics(gravity, new BABYLON.OimoJSPlugin());
+        scene.gravity = gravity;
         scene.collisionsEnabled = true;
 
         var camera = new BABYLON.ArcRotateCamera(
@@ -33,21 +38,30 @@ window.addEventListener('DOMContentLoaded', function() {
         );
         camera.attachControl(canvas, true);
         camera.checkCollisions = true;
+        camera.applyGravity = true;
 
-        var light = new BABYLON.PointLight(
-            "PointLight",
-            new BABYLON.Vector3(0, 0, 0),
+        var light = new BABYLON.HemisphericLight(
+            "HemisphericLight",
+            new BABYLON.Vector3(0, 1, 0),
             scene
         );
 
         light.parent = camera;
-        light.intensity = 1.5;
+        light.intensity = 2.0;
         BABYLON.SceneLoader.ImportMesh(
-            "", "", "model/boat.babylon",
+            "", "", "model/boat-and-crane.babylon",
             scene,
             function(newMeshes) {
                 newMeshes.forEach(
                     function(mesh) {
+                        console.log(mesh);
+                        mesh.showBoundingBox = true;
+                        mesh._checkCollisions = true;
+                        mesh.checkCollisions = function(en) {
+                            console.log('true');
+                        }
+                        console.log(mesh);
+                        console.log('d')
                         elements.push(mesh);
                     }
                 );
@@ -56,9 +70,42 @@ window.addEventListener('DOMContentLoaded', function() {
 
         elements.forEach(function(element) {
             element.checkCollisions = true;
+            element.showBoundingBox = true;
+            element.setPhysicsState(BABYLON.PhysicsEngine.BoxImpostor, { mass: 0, 
+                                                friction: 0.5, restitution: 0.7 });
         });
 
         scene.registerBeforeRender(function() {});
+
+        // Water
+        var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 512, 512, 32, scene, false);
+        
+        var water = new BABYLON.WaterMaterial("water", scene);
+        water.bumpTexture = new BABYLON.Texture("model/water/waterbump.png", scene);
+        
+        // Ground
+        var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseTexture = new BABYLON.Texture("model/ground.jpg", scene);
+        groundMaterial.diffuseTexture.uScale = groundMaterial.diffuseTexture.vScale = 4;
+        
+        var ground = BABYLON.Mesh.CreateGround("ground", 512, 512, 32, scene, false);
+        ground.position.y = -11;
+        ground.material = groundMaterial;
+
+        // Water properties
+        water.windForce = -15;
+        water.waveHeight = 1.3;
+        water.windDirection = new BABYLON.Vector2(1, 1);
+        water.waterColor = new BABYLON.Color3(0.1, 0.1, 0.6);
+        water.colorBlendFactor = 0.3;
+        water.bumpHeight = 0.1;
+        water.waveLength = 0.1;
+        
+
+        water.addToRenderList(ground);
+        // Assign the water material
+        waterMesh.material = water;
+        waterMesh.position.y = -10;
 
         return scene;
     }
@@ -78,7 +125,7 @@ window.addEventListener('DOMContentLoaded', function() {
                  rotateElements(elements.filter(getCrane)[0], BABYLON.Axis.Y, -Math.PI / 12);
             }
             else {
-                var transVector = new BABYLON.Vector3(1, 0, 0);
+                var transVector = new BABYLON.Vector3(0, 0, -1);
                 translateElements(elements[0], transVector);
             }
         }
@@ -89,7 +136,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 rotateElements(elements.filter(getCrane)[0], BABYLON.Axis.Y, Math.PI / 12);
             }
             else {
-                var transVector = new BABYLON.Vector3(-1, 0, 0);
+                var transVector = new BABYLON.Vector3(0, 0, 1);
                 console.log(elements);
                 translateElements(elements.filter(getBoat)[0], transVector);
             }
@@ -112,6 +159,11 @@ window.addEventListener('DOMContentLoaded', function() {
             else {
                 rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, Math.PI / 16);
             }
+        }
+        //space bar
+        if (evt.keyCode === 32) {
+            console.log(elements);
+            scaleElements(elements.filter(getCrane)[0], dimensions[1], 1.1);
         }
 
     
@@ -195,7 +247,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     function getBoat(item) {
-        return item.id === "Boat";
+        return item.id === "Shiping_";
     }
 
 
