@@ -169,7 +169,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 if (holding) {
                     var claw = elements.filter(getClaw)[0];
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y;
+                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
                     currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
                 }
             } else {
@@ -189,7 +189,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 if (holding) {
                     var claw = elements.filter(getClaw)[0];
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y;
+                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
                     currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
                 }
             }
@@ -232,7 +232,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if (holding) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                currentHoldingContainer.position.y = claw.getAbsolutePosition().y;
+                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
                 currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
             }
          
@@ -251,7 +251,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if (holding) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                currentHoldingContainer.position.y = claw.getAbsolutePosition().y;
+                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
                 currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
             }
         }
