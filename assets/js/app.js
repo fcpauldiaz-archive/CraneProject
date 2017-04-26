@@ -22,6 +22,8 @@ window.addEventListener('DOMContentLoaded', function() {
     var readyToDrop = false;
     var holding = false;
     var containersWithShip = [];
+    var toggleCamera = 1;
+    var camera, camera2, camera3;
 
     engine.enableOfflineSupport = false;
 
@@ -32,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function() {
         scene.collisionsEnabled = true;
        
 
-        var camera = new BABYLON.ArcRotateCamera(
+        camera = new BABYLON.ArcRotateCamera(
             "arcCam",
             BABYLON.Tools.ToRadians(90),
             BABYLON.Tools.ToRadians(90),
@@ -40,6 +42,21 @@ window.addEventListener('DOMContentLoaded', function() {
             BABYLON.Vector3.Zero(),
             scene
         );
+       /* camera2 = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(13.7, 6, -11), scene);
+        //camera2.setTarget(new BABYLON.Vector3(200, 7, 0));
+        camera2.rotation = new BABYLON.Vector3(0, 26.8,0);*/
+        camera2 = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), scene);
+        camera2.heightOffset = 1;
+        camera2.radius = 2;
+        camera2.rotationOffset = -90;
+        camera2.cameraAcceleration = 0.5;
+        // camera2.rotation = new BABYLON.Vector3(0, BABYLON.Tools.ToRadians(180), 0);
+       
+        camera3 = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(-1, 9, 3.5), scene);
+        camera3.rotation = new BABYLON.Vector3(0, 9.5, 0);
+      
+        
+        
         camera.attachControl(canvas, true);
         camera.applyGravity = true; 
         camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
@@ -145,6 +162,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 var transVector = new BABYLON.Vector3(0, 0, -1);
                 var transVectorContainer = new BABYLON.Vector3(1, 0, 0);
                 translateElements(elements.filter(getBoat)[0], transVector);
+                //camera2.position.x += 1;
 
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
@@ -178,6 +196,7 @@ window.addEventListener('DOMContentLoaded', function() {
             else {
                 var transVector = new BABYLON.Vector3(0, 0, 1);
                 translateElements(elements.filter(getBoat)[0], transVector);
+                //camera2.position.x -= 1;
                 var transVectorContainer = new BABYLON.Vector3(-1, 0, 0);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
@@ -200,6 +219,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if (actualElement === true) {
                 var crane = elements.filter(getCrane)[0];
                 rotateElements(crane, BABYLON.Axis.Y, Math.PI / 12);
+               
                 if (holding) {
                     var claw = elements.filter(getClaw)[0];
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
@@ -208,6 +228,8 @@ window.addEventListener('DOMContentLoaded', function() {
                     currentHoldingContainer.rotationX = 0;
                 }
             } else {
+                // camera2.rotation.y -= Math.PI / 12;
+                // camera2.position.x -= Math.PI/12; 
                 rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, -Math.PI / 16);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
@@ -221,6 +243,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if (actualElement === true) {
                 var crane = elements.filter(getCrane)[0]
                 rotateElements(crane, BABYLON.Axis.Y, -Math.PI / 12);
+                
                 if (holding) {
                     var claw = elements.filter(getClaw)[0];
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
@@ -230,6 +253,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
             }
             else {
+                // camera2.rotation.y += Math.PI / 12
                 rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, Math.PI / 16);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
@@ -385,7 +409,20 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
     
+        if (evt.keyCode === 84) {
+            //1 normal camera, 2 crane , 3 boat
+            var canvas = document.getElementById('canvas');
+            
+            toggleCamera++;
+            if (toggleCamera === 4) toggleCamera = 1;
+            switch(toggleCamera) {
+                case 1: scene.activeCamera = camera; camera.attachControl(canvas); break;
+                case 2: camera2.lockedTarget = elements.filter(getBoatCamera)[0]; scene.activeCamera = camera2;   break;
+                case 3: scene.activeCamera = camera3;  camera3.attachControl(canvas); break;
+            }
+            
 
+        }
         //help
         if (evt.keyCode == 57) {
             var helpBlock = document.getElementById('helpBlock');
@@ -481,6 +518,16 @@ window.addEventListener('DOMContentLoaded', function() {
     function getCylinder(item) {
         return item.id === "Cylinder3";
     }
+
+    function getCraneCamera(item) {
+        return item.id === "Box18";
+    }
+    
+    function getBoatCamera(item) {
+        return item.id === "Wheel1";
+    }
+
+    
 
 
 
