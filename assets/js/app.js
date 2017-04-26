@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', function() {
     var plan2;
     var matPlan;
     var currentHoldingContainer;
+    var readyToDrop = false;
     var holding = false;
     var containersWithShip = [];
 
@@ -130,14 +131,29 @@ window.addEventListener('DOMContentLoaded', function() {
         if (evt.keyCode == 87) {
             if (actualElement === true) {
                 rotateElements(elements.filter(getClaw)[0], BABYLON.Axis.Y, -Math.PI / 12);
+                if (holding) {
+                    rotateElements(currentHoldingContainer, BABYLON.Axis.Y, -Math.PI / 12);
+                    currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = -Math.PI / 12:
+                    currentHoldingContainer.rotationX -= Math.PI / 12;
+                }
             }
             else {
+                var boat = elements.filter(getBoat)[0];
                 var transVector = new BABYLON.Vector3(0, 0, -1);
                 var transVectorContainer = new BABYLON.Vector3(1, 0, 0);
                 translateElements(elements.filter(getBoat)[0], transVector);
+
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
-                    translateElements(container, transVectorContainer);
+                    console.log(container.rotationX);
+                    if (container.rotationX !== 0) {
+                        rotateElements(container, BABYLON.Axis.Y, -container.rotationX);    
+                        translateElements(container, transVectorContainer);
+                        rotateElements(container, BABYLON.Axis.Y, container.rotationX);    
+                    } else {
+                        translateElements(container, transVectorContainer);
+                    }
+                
                 }
             }
         }
@@ -146,16 +162,28 @@ window.addEventListener('DOMContentLoaded', function() {
         if (evt.keyCode == 83) {
             if (actualElement === true) {
                 rotateElements(elements.filter(getClaw)[0], BABYLON.Axis.Y, Math.PI / 12);
+                if (holding) {
+                    rotateElements(currentHoldingContainer, BABYLON.Axis.Y, Math.PI / 12);
+                    currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = Math.PI / 12:
+                    currentHoldingContainer.rotationX += Math.PI / 12;;
+                }
                 
             }
             else {
                 var transVector = new BABYLON.Vector3(0, 0, 1);
                 translateElements(elements.filter(getBoat)[0], transVector);
                 var transVectorContainer = new BABYLON.Vector3(-1, 0, 0);
-                translateElements(elements.filter(getBoat)[0], transVector);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
-                    translateElements(container, transVectorContainer);
+                    console.log(container.rotationX);
+                    if (container.rotationX !== 0) {
+                        rotateElements(container, BABYLON.Axis.Y, -container.rotationX);    
+                        translateElements(container, transVectorContainer);
+                        rotateElements(container, BABYLON.Axis.Y, container.rotationX);    
+                    } else {
+                        translateElements(container, transVectorContainer);
+                    }
+                
                 }
 
             }
@@ -171,6 +199,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                     currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
                     currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+                    currentHoldingContainer.rotationX = 0;
                 }
             } else {
                 rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, -Math.PI / 16);
@@ -191,6 +220,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                     currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
                     currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+                    currentHoldingContainer.rotationX = 0;
                 }
             }
             else {
@@ -220,6 +250,7 @@ window.addEventListener('DOMContentLoaded', function() {
             if ((Math.abs(clawPosition.y) -3) < Math.abs(boatPosition.y)
                 && center > (boatPosition.x - 14.0) && center < (boatPosition.x + 20.77)
                 ) {
+                readyToDrop = true;
                 //drop on choque
                 console.log('choca');
             } else {
@@ -258,7 +289,10 @@ window.addEventListener('DOMContentLoaded', function() {
         // spacebar
         if (evt.keyCode === 32) {
             //dropoff command
-            if (holding) {
+            console.log('drop')
+            console.log(holding)
+            console.log(readyToDrop)
+            if (holding && readyToDrop) {
                 if (!containersWithShip.includes(currentHoldingContainer)) {
                     containersWithShip.push(currentHoldingContainer);
                 }
@@ -286,7 +320,12 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             console.log(closer_container.id);
             currentHoldingContainer = closer_container
-            holding = !holding;
+            if (holding === true && readyToDrop === true) {
+                holding = !holding;
+            } if (holding === false) {
+                holding = !holding;
+            }
+
         }
     
 
