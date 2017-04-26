@@ -130,7 +130,10 @@ window.addEventListener('DOMContentLoaded', function() {
         //W
         if (evt.keyCode == 87) {
             if (actualElement === true) {
-                rotateElements(elements.filter(getClaw)[0], BABYLON.Axis.Y, -Math.PI / 12);
+                var claw = elements.filter(getClaw)[0];
+                rotateElements(claw, BABYLON.Axis.Y, -Math.PI / 12);
+                claw.rotationX === undefined? claw.rotationX = -Math.PI / 12:
+                claw.rotationX -= Math.PI / 12;
                 if (holding) {
                     rotateElements(currentHoldingContainer, BABYLON.Axis.Y, -Math.PI / 12);
                     currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = -Math.PI / 12:
@@ -161,7 +164,10 @@ window.addEventListener('DOMContentLoaded', function() {
         //S
         if (evt.keyCode == 83) {
             if (actualElement === true) {
-                rotateElements(elements.filter(getClaw)[0], BABYLON.Axis.Y, Math.PI / 12);
+                var claw = elements.filter(getClaw)[0];
+                rotateElements(claw, BABYLON.Axis.Y, Math.PI / 12);
+                claw.rotationX === undefined? claw.rotationX = Math.PI / 12:
+                claw.rotationX += Math.PI / 12;
                 if (holding) {
                     rotateElements(currentHoldingContainer, BABYLON.Axis.Y, Math.PI / 12);
                     currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = Math.PI / 12:
@@ -327,6 +333,57 @@ window.addEventListener('DOMContentLoaded', function() {
             }
 
         }
+
+        // Q
+        if (evt.keyCode === 81) {
+            var claw = elements.filter(getClaw)[0];
+            var rope = elements.filter(getRope)[0];
+            var cylinder = elements.filter(getCylinder)[0];
+            var transVector = new BABYLON.Vector3(0, 0, 1);
+            var transVector2 = new BABYLON.Vector3(0, 0, -1);
+            if (claw.rotationX !== undefined) {
+               
+                rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
+                translateElements(claw,  transVector2);
+                rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
+            }  else {
+                translateElements(claw,  transVector2);
+            }
+            
+            translateElements(rope,  transVector);
+            translateElements(cylinder, transVector);
+            if (holding) {
+                var claw = elements.filter(getClaw)[0];
+                currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
+                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
+                currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+            }
+        }
+
+        // E
+        if (evt.keyCode === 69) {
+            var claw = elements.filter(getClaw)[0];
+            var rope = elements.filter(getRope)[0];
+            var cylinder = elements.filter(getCylinder)[0];
+            var transVector = new BABYLON.Vector3(0, 0, -1);
+            var transVector2 = new BABYLON.Vector3(0, 0, 1);
+             if (claw.rotationX !== undefined) {
+               
+                rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
+                translateElements(claw,  transVector2);
+                rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
+            }  else {
+                translateElements(claw,  transVector2);
+            }
+            translateElements(rope,  transVector);
+            translateElements(cylinder, transVector);
+            if (holding) {
+                var claw = elements.filter(getClaw)[0];
+                currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
+                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
+                currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+            }
+        }
     
 
         //help
@@ -419,6 +476,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
     function getContainers(item) {
         return item.id.includes("Container");
+    }
+
+    function getCylinder(item) {
+        return item.id === "Cylinder3";
     }
 
 
