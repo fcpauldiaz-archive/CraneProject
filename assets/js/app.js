@@ -84,18 +84,13 @@ window.addEventListener('DOMContentLoaded', function() {
         );
 
 
-        scene.meshes.forEach(function(element) {
-            element.checkCollisions = true;
-            element.boundingBox = true;
-        });
+        
          
        
         scene.registerBeforeRender(function() {
-            elements.forEach(function(element) {
-                element.checkCollisions = true;
-                element.boundingBox = true;
-                //element.moveWithCollisions();
-            });
+            // elements.forEach(function(element) {
+            //     element.checkCollisions = true;              
+            // });
         });
 
         // Water
@@ -146,6 +141,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
         //W
         if (evt.keyCode == 87) {
+            
             if (actualElement === true) {
                 var claw = elements.filter(getClaw)[0];
                 rotateElements(claw, BABYLON.Axis.Y, -Math.PI / 12);
@@ -159,15 +155,16 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             else {
                 var boat = elements.filter(getBoat)[0];
+                
+                var isle = elements.filter(getIsle)[0];
                 var transVector = new BABYLON.Vector3(0, 0, -1);
                 var transVectorContainer = new BABYLON.Vector3(1, 0, 0);
                 translateElements(elements.filter(getBoat)[0], transVector);
-                //camera2.position.x += 1;
-
+            
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
                     console.log(container.rotationX);
-                    if (container.rotationX !== 0) {
+                    if (container.rotationX !== undefined) {
                         rotateElements(container, BABYLON.Axis.Y, -container.rotationX);    
                         translateElements(container, transVectorContainer);
                         rotateElements(container, BABYLON.Axis.Y, container.rotationX);    
@@ -186,7 +183,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 rotateElements(claw, BABYLON.Axis.Y, Math.PI / 12);
                 claw.rotationX === undefined? claw.rotationX = Math.PI / 12:
                 claw.rotationX += Math.PI / 12;
-                if (holding) {
+                if (holding  && currentHoldingContainer !== undefined) {
                     rotateElements(currentHoldingContainer, BABYLON.Axis.Y, Math.PI / 12);
                     currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = Math.PI / 12:
                     currentHoldingContainer.rotationX += Math.PI / 12;;
@@ -195,13 +192,14 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             else {
                 var transVector = new BABYLON.Vector3(0, 0, 1);
-                translateElements(elements.filter(getBoat)[0], transVector);
-                //camera2.position.x -= 1;
+                var boat = elements.filter(getBoat)[0];
+                translateElements(boat, transVector);
+                var isle = elements.filter(getIsle)[0];
                 var transVectorContainer = new BABYLON.Vector3(-1, 0, 0);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
                     console.log(container.rotationX);
-                    if (container.rotationX !== 0) {
+                    if (container.rotationX !== undefined) {
                         rotateElements(container, BABYLON.Axis.Y, -container.rotationX);    
                         translateElements(container, transVectorContainer);
                         rotateElements(container, BABYLON.Axis.Y, container.rotationX);    
@@ -219,18 +217,20 @@ window.addEventListener('DOMContentLoaded', function() {
             if (actualElement === true) {
                 var crane = elements.filter(getCrane)[0];
                 rotateElements(crane, BABYLON.Axis.Y, Math.PI / 12);
-               
-                if (holding) {
-                    var claw = elements.filter(getClaw)[0];
+                var claw = elements.filter(getClaw)[0];
+                console.log(claw.getAbsolutePosition());
+                if (holding  && currentHoldingContainer !== undefined) {
+                    
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                     currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
                     currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
                     currentHoldingContainer.rotationX = 0;
                 }
             } else {
-                // camera2.rotation.y -= Math.PI / 12;
-                // camera2.position.x -= Math.PI/12; 
-                rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, -Math.PI / 16);
+                var isle = elements.filter(getIsle)[0];
+                var boat = elements.filter(getBoat)[0];
+                
+                rotateElements(boat, BABYLON.Axis.Y, -Math.PI / 16);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
                     rotateElements(container, BABYLON.Axis.Y, -Math.PI / 16);
@@ -244,7 +244,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 var crane = elements.filter(getCrane)[0]
                 rotateElements(crane, BABYLON.Axis.Y, -Math.PI / 12);
                 
-                if (holding) {
+                if (holding  && currentHoldingContainer !== undefined) {
                     var claw = elements.filter(getClaw)[0];
                     currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                     currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;
@@ -253,8 +253,10 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
             }
             else {
-                // camera2.rotation.y += Math.PI / 12
-                rotateElements(elements.filter(getBoat)[0], BABYLON.Axis.Y, Math.PI / 16);
+                var isle = elements.filter(getIsle)[0];
+                var boat = elements.filter(getBoat)[0];
+                console.log(isle.intersectsMesh(boat, true));
+                rotateElements(boat, BABYLON.Axis.Y, Math.PI / 16);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
                     rotateElements(container, BABYLON.Axis.Y, Math.PI / 16);
@@ -276,21 +278,30 @@ window.addEventListener('DOMContentLoaded', function() {
             console.log('claw')
             console.log(clawPosition.z)
             console.log(clawPosition.x)*/
+            readyToDrop = false;
             var center = clawPosition.x
             if ((Math.abs(clawPosition.y) -3) < Math.abs(boatPosition.y)
-                && center > (boatPosition.x - 14.0) && center < (boatPosition.x + 20.77)
-                ) {
+                && center > (boatPosition.x - 21.0) && center < (boatPosition.x + 20.77)
+                && clawPosition.z > (boatPosition.z - 5.0) && clawPosition.z < (boatPosition.z + 5.0)) {
+                    console.log(boatPosition);
+                    console.log(clawPosition);
                 readyToDrop = true;
                 //drop on choque
                 console.log('choca');
-            } else {
+            } 
+            else if (clawPosition.z > -3 && clawPosition.y <= 3.72) {
+                console.log('choca isla');
+            }
+            else {
+                
+
                 var transVector = new BABYLON.Vector3(0, -0.5, 0);
                 var transVector2 = new BABYLON.Vector3(0, -1, 0);
                 translateElements(claw,transVector2);
                 scaleElements(rope, dimensions[1], 1.1);
                 translateElements(rope, transVector);
             }
-            if (holding) {
+            if (holding && currentHoldingContainer !== undefined) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                 currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
@@ -309,7 +320,7 @@ window.addEventListener('DOMContentLoaded', function() {
             translateElements(claw,transVector2);
             scaleElements(rope, dimensions[1], 0.9);
             translateElements(rope, transVector);
-            if (holding) {
+            if (holding  && currentHoldingContainer !== undefined) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                 currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
@@ -322,40 +333,49 @@ window.addEventListener('DOMContentLoaded', function() {
             console.log('drop')
             console.log(holding)
             console.log(readyToDrop)
-            if (holding && readyToDrop) {
+            if (holding && readyToDrop && currentHoldingContainer !== undefined) {
                 if (!containersWithShip.includes(currentHoldingContainer)) {
                     containersWithShip.push(currentHoldingContainer);
+                    currentHoldingContainer = undefined;
+                    console.log(containersWithShip);
                 }
             }
+            else {
 
-            //hold one container
-            //check for containers
-            var containers = elements.filter(getContainers);
-            var clawPosition = elements.filter(getClaw)[0].getAbsolutePosition();
-            var size = containers[0].getBoundingInfo().boundingBox.extendSize;
-            var closer_container = undefined;
-            var currentDiff = -10000;
-            for (var i = 0 ; i < containers.length; i++) {
-                var c1 = containers[i];
-                var posC1 = c1.getAbsolutePosition();
-                if (Math.abs(posC1.y) - Math.abs(clawPosition.y) > currentDiff) {
-                    currentDiff = Math.abs(posC1.y) - Math.abs(clawPosition.y);
-                    closer_container = c1;
+                //hold one container
+                //check for containers
+                var containers = elements.filter(getContainers);
+                var clawPosition = elements.filter(getClaw)[0].getAbsolutePosition();
+                var size = containers[0].getBoundingInfo().boundingBox.extendSize;
+                var closer_container = undefined;
+                var currentDiff = -10000;
+                var currentDiffZ = -10000;
+                if (clawPosition.z > 1 && clawPosition.z <= 15 && 
+                    clawPosition.x < -11 && clawPosition.x > -21
+                    && clawPosition.y <= 12) {
+                    for (var i = 0 ; i < containers.length; i++) {
+                        var c1 = containers[i];
+                        var posC1 = c1.getAbsolutePosition();
+                        if (Math.abs(posC1.y) - Math.abs(clawPosition.y) > currentDiff &&
+                            Math.abs(posC1.z) - Math.abs(clawPosition.z) > currentDiffZ) {
+                            currentDiff = Math.abs(posC1.y) - Math.abs(clawPosition.y);
+                            currentDiffZ = Math.abs(posC1.z) - Math.abs(clawPosition.z);
+                            closer_container = c1;
+                        }
+                    }
                 }
-                console.log('verify')
-                console.log(posC1.y)
-                console.log(clawPosition.y)
-                console.log(posC1.y - clawPosition.y)
-                console.log(c1.id);
+                console.log(clawPosition.z);
+                console.log(clawPosition.z > 1 && clawPosition.z <= 15);
+                currentHoldingContainer = closer_container
+               
             }
-            console.log(closer_container.id);
-            currentHoldingContainer = closer_container
+            
             if (holding === true && readyToDrop === true) {
-                holding = !holding;
-            } if (holding === false) {
-                holding = !holding;
+                holding = false;
+            } else {
+                holding = true;
             }
-
+             
         }
 
         // Q
@@ -376,7 +396,7 @@ window.addEventListener('DOMContentLoaded', function() {
             
             translateElements(rope,  transVector);
             translateElements(cylinder, transVector);
-            if (holding) {
+            if (holding && currentHoldingContainer !== undefined) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                 currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
@@ -401,7 +421,7 @@ window.addEventListener('DOMContentLoaded', function() {
             }
             translateElements(rope,  transVector);
             translateElements(cylinder, transVector);
-            if (holding) {
+            if (holding && currentHoldingContainer !== undefined) {
                 var claw = elements.filter(getClaw)[0];
                 currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
                 currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
@@ -525,6 +545,10 @@ window.addEventListener('DOMContentLoaded', function() {
     
     function getBoatCamera(item) {
         return item.id === "Wheel1";
+    }
+
+    function getIsle(item) {
+        return item.id === "Isle";
     }
 
     
