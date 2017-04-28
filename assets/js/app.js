@@ -147,7 +147,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 rotateElements(claw, BABYLON.Axis.Y, -Math.PI / 12);
                 claw.rotationX === undefined? claw.rotationX = -Math.PI / 12:
                 claw.rotationX -= Math.PI / 12;
-                if (holding) {
+                if (holding && currentHoldingContainer !== undefined) {
                     rotateElements(currentHoldingContainer, BABYLON.Axis.Y, -Math.PI / 12);
                     currentHoldingContainer.rotationX === undefined? currentHoldingContainer.rotationX = -Math.PI / 12:
                     currentHoldingContainer.rotationX -= Math.PI / 12;
@@ -348,21 +348,38 @@ window.addEventListener('DOMContentLoaded', function() {
                 var clawPosition = elements.filter(getClaw)[0].getAbsolutePosition();
                 var size = containers[0].getBoundingInfo().boundingBox.extendSize;
                 var closer_container = undefined;
-                var currentDiff = -10000;
-                var currentDiffZ = -10000;
+                var currentDiff = 10000;
+                var currentDiffZ = 10000;
                 if (clawPosition.z > 1 && clawPosition.z <= 15 && 
                     clawPosition.x < -11 && clawPosition.x > -21
                     && clawPosition.y <= 12) {
                     for (var i = 0 ; i < containers.length; i++) {
                         var c1 = containers[i];
                         var posC1 = c1.getAbsolutePosition();
-                        if (Math.abs(posC1.y) - Math.abs(clawPosition.y) > currentDiff &&
-                            Math.abs(posC1.z) - Math.abs(clawPosition.z) > currentDiffZ) {
-                            currentDiff = Math.abs(posC1.y) - Math.abs(clawPosition.y);
-                            currentDiffZ = Math.abs(posC1.z) - Math.abs(clawPosition.z);
-                            closer_container = c1;
+                        if (!containersWithShip.includes(c1)) {
+                            console.log(Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)) < currentDiff);
+                            console.log(Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)),  '<',  currentDiffZ, Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)) < currentDiffZ);
+                            if (Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)) < currentDiff &&
+                                Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)) < currentDiffZ) {
+                                //console.log( Math.abs(posC1.z) - Math.abs(clawPosition.z) > currentDiffZ);
+                                console.log('compare');
+                                console.log(Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)));
+                                console.log(currentDiff);
+                                currentDiff = Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y));
+                                currentDiffZ = Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z));
+                                closer_container = c1;
+                            }
+                            console.log('verfiy')
+                            console.log(posC1.z);
+                            console.log(clawPosition.z);
+                            console.log(Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)));
+                            
+                            console.log(c1.id);
+                            closer_container === undefined ? '': console.log(closer_container.id);
                         }
+
                     }
+
                 }
                 console.log(clawPosition.z);
                 console.log(clawPosition.z > 1 && clawPosition.z <= 15);
@@ -382,25 +399,27 @@ window.addEventListener('DOMContentLoaded', function() {
         if (evt.keyCode === 81) {
             var claw = elements.filter(getClaw)[0];
             var rope = elements.filter(getRope)[0];
-            var cylinder = elements.filter(getCylinder)[0];
-            var transVector = new BABYLON.Vector3(0, 0, 1);
-            var transVector2 = new BABYLON.Vector3(0, 0, -1);
-            if (claw.rotationX !== undefined) {
-               
-                rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
-                translateElements(claw,  transVector2);
-                rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
-            }  else {
-                translateElements(claw,  transVector2);
-            }
-            
-            translateElements(rope,  transVector);
-            translateElements(cylinder, transVector);
-            if (holding && currentHoldingContainer !== undefined) {
-                var claw = elements.filter(getClaw)[0];
-                currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
-                currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+            if (rope.position.z <= -5) {
+                var cylinder = elements.filter(getCylinder)[0];
+                var transVector = new BABYLON.Vector3(0, 0, 1);
+                var transVector2 = new BABYLON.Vector3(0, 0, -1);
+                if (claw.rotationX !== undefined) {
+                
+                    rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
+                    translateElements(claw,  transVector2);
+                    rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
+                }  else {
+                    translateElements(claw,  transVector2);
+                }
+                
+                translateElements(rope,  transVector);
+                translateElements(cylinder, transVector);
+                if (holding && currentHoldingContainer !== undefined) {
+                    var claw = elements.filter(getClaw)[0];
+                    currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
+                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
+                    currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+                }
             }
         }
 
@@ -411,21 +430,24 @@ window.addEventListener('DOMContentLoaded', function() {
             var cylinder = elements.filter(getCylinder)[0];
             var transVector = new BABYLON.Vector3(0, 0, -1);
             var transVector2 = new BABYLON.Vector3(0, 0, 1);
-             if (claw.rotationX !== undefined) {
-               
-                rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
-                translateElements(claw,  transVector2);
-                rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
-            }  else {
-                translateElements(claw,  transVector2);
-            }
-            translateElements(rope,  transVector);
-            translateElements(cylinder, transVector);
-            if (holding && currentHoldingContainer !== undefined) {
-                var claw = elements.filter(getClaw)[0];
-                currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
-                currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
-                currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+            
+            if  (rope.position.z >= -31) {
+                if (claw.rotationX !== undefined) {
+                
+                    rotateElements(claw, BABYLON.Axis.Y, -claw.rotationX);
+                    translateElements(claw,  transVector2);
+                    rotateElements(claw, BABYLON.Axis.Y, claw.rotationX);
+                }  else {
+                    translateElements(claw,  transVector2);
+                }
+                translateElements(rope,  transVector);
+                translateElements(cylinder, transVector);
+                if (holding && currentHoldingContainer !== undefined) {
+                    var claw = elements.filter(getClaw)[0];
+                    currentHoldingContainer.position.x = claw.getAbsolutePosition().x;
+                    currentHoldingContainer.position.y = claw.getAbsolutePosition().y - 1.8;;
+                    currentHoldingContainer.position.z = claw.getAbsolutePosition().z;
+                }
             }
         }
     
