@@ -42,14 +42,14 @@ window.addEventListener('DOMContentLoaded', function() {
             BABYLON.Vector3.Zero(),
             scene
         );
-       /* camera2 = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(13.7, 6, -11), scene);
-        //camera2.setTarget(new BABYLON.Vector3(200, 7, 0));
-        camera2.rotation = new BABYLON.Vector3(0, 26.8,0);*/
-        camera2 = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), scene);
-        camera2.heightOffset = 1;
-        camera2.radius = 2;
-        camera2.rotationOffset = -90;
-        camera2.cameraAcceleration = 0.5;
+        camera2 = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(1.0, 9, -12), scene);
+        camera2.setTarget(new BABYLON.Vector3(200, 7, 0));
+        //camera2.rotation = new BABYLON.Vector3(0, 26.8,0);
+        // camera2 = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), scene);
+        // camera2.heightOffset = 1;
+        // camera2.radius = 2;
+        // camera2.rotationOffset = -90;
+        // camera2.cameraAcceleration = 0.5;
         // camera2.rotation = new BABYLON.Vector3(0, BABYLON.Tools.ToRadians(180), 0);
        
         camera3 = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(-1, 9, 3.5), scene);
@@ -234,6 +234,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
                     rotateElements(container, BABYLON.Axis.Y, -Math.PI / 16);
+                    
                 }
             }
         }
@@ -255,7 +256,8 @@ window.addEventListener('DOMContentLoaded', function() {
             else {
                 var isle = elements.filter(getIsle)[0];
                 var boat = elements.filter(getBoat)[0];
-                console.log(isle.intersectsMesh(boat, true));
+               
+               
                 rotateElements(boat, BABYLON.Axis.Y, Math.PI / 16);
                 for (var i = 0; i < containersWithShip.length; i++) {
                     var container = containersWithShip[i];
@@ -272,25 +274,35 @@ window.addEventListener('DOMContentLoaded', function() {
             
             var clawPosition = claw.getAbsolutePosition();
             var boatPosition = boat.getAbsolutePosition();
-          /*  console.log('boat')
-            console.log(boatPosition.z)
-            console.log(boatPosition.x)
-            console.log('claw')
-            console.log(clawPosition.z)
-            console.log(clawPosition.x)*/
+          
+          
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
             readyToDrop = false;
             var center = clawPosition.x
             if ((Math.abs(clawPosition.y) -3) < Math.abs(boatPosition.y)
                 && center > (boatPosition.x - 21.0) && center < (boatPosition.x + 20.77)
                 && clawPosition.z > (boatPosition.z - 5.0) && clawPosition.z < (boatPosition.z + 5.0)) {
-                    console.log(boatPosition);
-                    console.log(clawPosition);
+                   
+                   
+                   
+                   
                 readyToDrop = true;
                 //drop on choque
-                console.log('choca');
+               
+               
             } 
             else if (clawPosition.z > -3 && clawPosition.y <= 3.72) {
-                console.log('choca isla');
+               
+               
             }
             else {
                 
@@ -330,14 +342,18 @@ window.addEventListener('DOMContentLoaded', function() {
         // spacebar
         if (evt.keyCode === 32) {
             //dropoff command
-            console.log('drop')
-            console.log(holding)
-            console.log(readyToDrop)
+           
+           
+           
+           
+           
+           
             if (holding && readyToDrop && currentHoldingContainer !== undefined) {
                 if (!containersWithShip.includes(currentHoldingContainer)) {
                     containersWithShip.push(currentHoldingContainer);
                     currentHoldingContainer = undefined;
-                    console.log(containersWithShip);
+                   
+                   
                 }
             }
             else {
@@ -357,25 +373,37 @@ window.addEventListener('DOMContentLoaded', function() {
                         var c1 = containers[i];
                         var posC1 = c1.getAbsolutePosition();
                         if (!containersWithShip.includes(c1)) {
-                            console.log(Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)) < currentDiff);
-                            console.log(Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)),  '<',  currentDiffZ, Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)) < currentDiffZ);
+                           
+                           
+                           
+                           
                             if (Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)) < currentDiff &&
                                 Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)) < currentDiffZ) {
-                                //console.log( Math.abs(posC1.z) - Math.abs(clawPosition.z) > currentDiffZ);
-                                console.log('compare');
-                                console.log(Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y)));
-                                console.log(currentDiff);
+                                
+                                
+                               
+                               
+                               
+                               
+                               
+                               
                                 currentDiff = Math.abs(Math.abs(posC1.y) - Math.abs(clawPosition.y));
                                 currentDiffZ = Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z));
                                 closer_container = c1;
                             }
-                            console.log('verfiy')
-                            console.log(posC1.z);
-                            console.log(clawPosition.z);
-                            console.log(Math.abs(Math.abs(posC1.z) - Math.abs(clawPosition.z)));
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           
                             
-                            console.log(c1.id);
-                            closer_container === undefined ? '': console.log(closer_container.id);
+                           
+                           
+                            
+                            
                         }
 
                     }
@@ -450,7 +478,16 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-    
+        // h
+        if (evt.keyCode === 72) {
+            var help = document.getElementById('help');
+            if (help.style.visibility == 'visible') {
+                help.style.visibility = 'hidden'
+            } else {
+                help.style.visibility = 'visible';
+            }
+        }
+
         if (evt.keyCode === 84) {
             //1 normal camera, 2 crane , 3 boat
             var canvas = document.getElementById('canvas');
@@ -459,7 +496,13 @@ window.addEventListener('DOMContentLoaded', function() {
             if (toggleCamera === 4) toggleCamera = 1;
             switch(toggleCamera) {
                 case 1: scene.activeCamera = camera; camera.attachControl(canvas); break;
-                case 2: camera2.lockedTarget = elements.filter(getBoatCamera)[0]; scene.activeCamera = camera2;   break;
+                //case 2: camera2.lockedTarget = elements.filter(getBoatCamera)[0]; scene.activeCamera = camera2;   break;
+                case 2:  
+                    scene.activeCamera = camera2; 
+                    camera2.attachControl(canvas); 
+                    camera2.parent =  elements.filter(getBoat)[0];
+                    console.log(camera2.parent);
+                    break;
                 case 3: scene.activeCamera = camera3;  camera3.attachControl(canvas); break;
             }
             
